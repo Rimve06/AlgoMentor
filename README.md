@@ -1,7 +1,7 @@
 # AlgoMentor — An Interactive Algorithm Visualizer with a Live AI Tutor
 
 <p align="center">
-  <img alt="Java" src="https://img.shields.io/badge/Java-21%2B-orange">
+  <img alt="Java" src="https://img.shields.io/badge/Java-27-orange">
   <img alt="JavaFX" src="https://img.shields.io/badge/UI-JavaFX%20%2B%20FXML-blue">
   <img alt="Build" src="https://img.shields.io/badge/Build-Maven-c71a36">
   <img alt="Database" src="https://img.shields.io/badge/DB-SQLite-003b57">
@@ -22,7 +22,7 @@ Two design decisions shape the whole codebase and are worth stating up front:
 * **No third-party JSON library.** Every JSON request and response — to Groq, OpenAI and Anthropic — is built and read by a **hand-written recursive-descent parser** (`JsonParser` + `JsonValue`) included in the project.
 * **The UI never blocks.** All database, network and trace-computation work runs on one shared, bounded thread pool and returns to the JavaFX Application Thread through `Platform.runLater(...)`.
 
-> 📄 For a full academic treatment — requirements, design, algorithm analysis, measured results, testing and critique — see the **Project Report** (`docs/AlgoMentor_Project_Report.docx`).
+> 📄 For a full academic treatment — requirements, design, algorithm analysis, measured results, testing and critique — see the **Project Report** (`docs/AlgoMentor_Technical_Report.docx`).
 
 ---
 
@@ -509,17 +509,17 @@ The `model` and `algorithm` packages have no JavaFX dependency, so they were com
 
 | Algorithm | Already sorted | Reverse sorted |
 |---|---|---|
-| Bubble | 20 steps (19 compares, **0 swaps** – early exit) | 380 steps (190 cmp, 189 swaps) |
-| Insertion | 20 steps (**0 swaps**) | 380 steps (190 cmp, 189 swaps) |
-| Selection | 191 steps (**still 190 compares**) | 202 steps |
-| Quick (last-element pivot) | 208 steps (**degrades toward n²**) | 220 steps |
-| Merge | 156 steps | 149 steps (stable ≈ n log n) |
+| Bubble | 20 steps (19 compares, **0 swaps** – early exit) | 381 steps (190 cmp, 190 swaps) |
+| Insertion | 20 steps (**0 swaps**) | 381 steps (190 cmp, 190 swaps) |
+| Selection | 191 steps (**still 190 compares**) | 201 steps |
+| Quick (last-element pivot) | 210 steps (**degrades toward n²**) | 220 steps |
+| Merge | 156 steps | 148 steps (stable ≈ n log n) |
 
 These reproduce the textbook behaviour the app teaches: bubble/insertion are adaptive, selection always scans everything, Lomuto-quicksort with a last-element pivot degrades on sorted input, and merge/heap are input-insensitive.
 
 ### Search and graph traces
 
-* **Binary Search**, n = 30, every element as target: mean **4.07** comparisons, max **5** (⌊log₂30⌋ + 1 = 5).
+* **Binary Search**, n = 30, every element as target: mean **4.13** comparisons (124 total), max **5** (⌊log₂30⌋ + 1 = 5).
 * **BFS** from node 0 → visit order `0, 1, 2, 3, 4, 5, 6, 7` (25 steps).
 * **DFS** from node 0 → visit order `0, 2, 6, 5, 7, 4, 1, 3` (27 steps).
 * **Dijkstra** from node 0 → finalized order `0, 2, 1, 5, 4, 7, 6, 3` with shortest distances **0, 2, 4, 5, 5, 7, 8, 9** for nodes `0, 2, 1, 5, 4, 7, 6, 3` (hand-checked against the graph). The trace has 9 ENQUEUE steps (the start node plus 8 successful relaxations) but only 8 finalizations, because node 7 is first reached at distance 9 (via 5) and later improved to 7 (via 4) — the outdated queue entry is correctly skipped.
@@ -532,7 +532,7 @@ These reproduce the textbook behaviour the app teaches: bubble/insertion are ada
 
 | Layer | Technology |
 |---|---|
-| Language | Java (code uses records, switch expressions, text blocks — JDK 21 is sufficient) |
+| Language | Java 27 (code uses records, switch expressions, text blocks; nothing newer than JDK 21 is required) |
 | UI | JavaFX 27 (`javafx-controls`, `javafx-fxml`), FXML, CSS, `Canvas` |
 | Build | Maven 3, `maven-compiler-plugin 3.13.0`, `javafx-maven-plugin 0.0.8`, `maven-shade-plugin 3.5.3` |
 | Database | SQLite via `org.xerial:sqlite-jdbc 3.47.1.0` |
@@ -582,14 +582,14 @@ Create `algomentor.properties` next to `pom.xml` (copy from `algomentor.properti
 # ▶️ Installation & Execution
 
 ## Prerequisites
-* **JDK 21+** and **Maven 3.8+**
+* **JDK 27** (matches `maven.compiler.release` in `pom.xml`) and **Maven 3.8+**
 * Internet access for Maven dependencies (and, optionally, AI + SMTP)
 
 ## Steps
 
 ```bash
 # 1. Enter the project folder (the one containing pom.xml)
-cd algomentor56/algomentor
+cd algomentor7/algomentor
 
 # 2. Create your config
 cp algomentor.properties.example algomentor.properties
@@ -640,11 +640,17 @@ mvn clean package
 
 # 🔒 Security Notes
 
-* **Never commit `algomentor.properties`.** It contains your mail password and API keys. Add this to `.gitignore` (the project notes assume it is ignored, but no `.gitignore` file ships in the archive):
+* **Never commit `algomentor.properties`.** It holds your mail password and API keys. A `.gitignore` ships, but it only excludes `target/`, so add:
   ```gitignore
-  algomentor.properties
+  algomentor7/algomentor/algomentor.properties
   target/
   *.db
+  .idea/
+  ```
+  If the file is already tracked, stop tracking it (this keeps your local copy):
+  ```bash
+  git rm --cached algomentor7/algomentor/algomentor.properties
+  git commit -m "Stop tracking local credentials"
   ```
 * **If real credentials were ever committed or shared, rotate them** (regenerate the Gmail App Password and the Groq/OpenAI keys).
 * Passwords are stored as **salted SHA-256**. That is far better than plaintext, but a single fast hash is not the modern standard for a public service — see *Future Enhancements*.
@@ -656,6 +662,8 @@ mvn clean package
 # ⚠️ Known Limitations
 
 * **Dijkstra's edge weights and distance labels are not drawn on the canvas.** They appear in the step captions (e.g. *"Finalized node 5 with shortest distance 5"*), but the graph picture itself shows only node colours.
+* **Custom input is unbounded**: very large arrays (hundreds of elements) can exhaust memory because every step stores a snapshot. Keep custom input under ~60 numbers.
+* Dragging the progress slider forward on BFS/DFS/Dijkstra can show incomplete visited state; stepping normally or backwards is correct.
 * The demo graph is **fixed** (8 nodes) and traversals always start at node `0`.
 * The **Duration** column in History records the time to *compute the trace* (from clicking Start until the trace is ready), not the animation length.
 * `User.emailVerified` is a Java-side flag; the `users` table has no such column because only verified users are ever stored.
@@ -706,17 +714,13 @@ Building AlgoMentor demonstrates practical skill in:
 
 # 🤝 Contributing
 
-Contributions are welcome.
-
-1. Fork the repository.
-2. Create a new feature branch.
-3. Make your changes to the `.circ` files (Logisim Evolution required).
-4. Update or re-verify the relevant ROM tables if microcode changes.
+1. Fork the repository and create a feature branch.
+2. Keep the layering: algorithms emit `Step`s only; drawing stays in `CanvasRenderer`; SQL stays in `DatabaseManager`.
+3. To add an algorithm: create a class extending `ArrayAlgorithm` or `GraphAlgorithm`, register it in `AlgorithmFactory`, and add entries to `AlgorithmCodeSnippets` and `AlgorithmGuide` (guide + facts).
+4. Never commit secrets.
 5. Open a Pull Request describing the change.
 
 ---
-
-# 👨‍💻 Author
 
 # 👨‍💻 Author
 

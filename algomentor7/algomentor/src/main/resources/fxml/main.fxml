@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<!--
+  BorderPane is the top-level responsive shell: top toolbar, left sidebar,
+  center content, right AI Mentor Chat sidebar, bottom playback bar. The Canvas inside the
+  Visualizer tab's StackPane is bound in the controller to that StackPane's
+  width/height properties, so the drawing surface grows and shrinks with the
+  window (see MainController#bindCanvasSize). The center region is now a
+  TabPane so Visualizer / Practice Problems / Complexity Analysis
+  can share the same window without opening extra Stages. (AI chat now lives permanently in the right sidebar.)
+-->
+<BorderPane fx:id="rootPane" styleClass="root-pane"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.algomentor.controller.MainController">
+
+    <top>
+        <ToolBar styleClass="top-toolbar">
+            <Label text="AlgoMentor" styleClass="app-title-small"/>
+            <Label fx:id="userLabel" styleClass="user-label"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="History" onAction="#handleOpenHistory"/>
+            <Button text="Log Out" onAction="#handleLogout"/>
+        </ToolBar>
+    </top>
+
+    <left>
+        <VBox styleClass="sidebar" minWidth="220" prefWidth="260" spacing="14">
+            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+
+            <Label text="Algorithm" styleClass="section-label"/>
+            <ListView fx:id="algorithmList" prefHeight="200" VBox.vgrow="NEVER"/>
+
+            <Label text="Input" styleClass="section-label"/>
+            <TextField fx:id="customInputField" promptText="e.g. 8,3,5,1,9,2 (blank = random)"/>
+
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label text="Size:"/>
+                <Spinner fx:id="sizeSpinner" prefWidth="80"/>
+            </HBox>
+
+            <HBox fx:id="targetBox" spacing="8" alignment="CENTER_LEFT" visible="false" managed="false">
+                <Label text="Target:"/>
+                <TextField fx:id="targetField" prefWidth="80" promptText="value"/>
+            </HBox>
+
+            <Button fx:id="generateButton" text="Generate / Reset" onAction="#handleGenerate" maxWidth="Infinity"/>
+            <Button fx:id="startButton" text="Start" onAction="#handleStart" maxWidth="Infinity" styleClass="primary-button"/>
+
+            <Label text="Complexity" styleClass="section-label"/>
+            <Label fx:id="complexityLabel" wrapText="true" styleClass="complexity-label"/>
+            <Label fx:id="descriptionLabel" wrapText="true" styleClass="description-label"/>
+        </VBox>
+    </left>
+
+    <center>
+        <TabPane fx:id="centerTabs" tabClosingPolicy="UNAVAILABLE" styleClass="center-tabs">
+
+            <Tab text="Visualizer">
+                <SplitPane fx:id="visualizerSplit" dividerPositions="0.62" styleClass="visualizer-split">
+                    <StackPane fx:id="canvasHolder" styleClass="canvas-holder" minWidth="0">
+                        <Canvas fx:id="canvas"/>
+                    </StackPane>
+                    <VBox fx:id="sidePanels" minWidth="0" minHeight="0" styleClass="side-panels">
+                        <VBox fx:id="codePanel" spacing="8" minHeight="0" prefHeight="0" VBox.vgrow="ALWAYS" styleClass="code-panel">
+                            <padding><Insets top="12" right="14" bottom="12" left="14"/></padding>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="Source Code" styleClass="section-title"/>
+                                <HBox HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="explainButton" text="Ask AI Mentor" onAction="#handleExplainWithAi"/>
+                                <Button fx:id="codeFoldButton" text="&#8722;" onAction="#handleToggleCode" styleClass="fold-button"/>
+                            </HBox>
+                            <TextArea fx:id="codeArea" editable="false" wrapText="false" minHeight="0" prefHeight="0" VBox.vgrow="ALWAYS" styleClass="code-area"/>
+                        </VBox>
+                        <VBox fx:id="guidePanel" spacing="8" minHeight="0" prefHeight="0" VBox.vgrow="ALWAYS" styleClass="guide-panel">
+                            <padding><Insets top="12" right="14" bottom="12" left="14"/></padding>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label text="Raw Algorithm &amp; Tips" styleClass="section-title-warm"/>
+                                <HBox HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="guideFoldButton" text="&#8722;" onAction="#handleToggleGuide" styleClass="fold-button"/>
+                            </HBox>
+                            <TextArea fx:id="rawAlgoArea" editable="false" wrapText="true" minHeight="0" prefHeight="0" VBox.vgrow="ALWAYS" styleClass="raw-area"/>
+                        </VBox>
+                    </VBox>
+                </SplitPane>
+            </Tab>
+
+            <Tab text="Practice Problems">
+                <VBox spacing="12" styleClass="tab-content">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+
+                    <Label text="Practice Problems" styleClass="section-title"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Topic:"/>
+                        <ComboBox fx:id="topicCombo" prefWidth="220"/>
+                        <Button text="Find Problems" onAction="#handleFindProblems" styleClass="primary-button"/>
+                    </HBox>
+
+                    <Label text="Curated real problems (verified links)" styleClass="section-label"/>
+                    <ScrollPane fx:id="problemsScroll" fitToWidth="true" prefHeight="160" styleClass="problems-scroll">
+                        <VBox fx:id="problemsContainer" spacing="6"/>
+                    </ScrollPane>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label text="Or generate original AI practice problems for this topic:" wrapText="true" HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="aiProblemsButton" text="Generate with AI" onAction="#handleGenerateAiProblems"/>
+                    </HBox>
+                    <TextArea fx:id="aiProblemsArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+
+            <Tab text="Complexity Analysis">
+                <VBox spacing="10" styleClass="tab-content">
+                    <padding><Insets top="18" right="18" bottom="18" left="18"/></padding>
+                    <Label text="Complexity Analysis" styleClass="section-title"/>
+                    <Label fx:id="compareCategoryLabel" styleClass="description-label" wrapText="true"/>
+                    <Button fx:id="compareButton" text="Analyze &amp; compare: what, why and which is best" onAction="#handleCompareAlgorithms" styleClass="primary-button" maxWidth="Infinity"/>
+                    <TextArea fx:id="compareResultArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS" styleClass="analysis-area"/>
+                    <Label fx:id="compareTableTitle" text="Summary table" styleClass="section-title-warm" visible="false" managed="false"/>
+                    <TableView fx:id="compareTable" prefHeight="230" minHeight="150" visible="false" managed="false"/>
+                </VBox>
+            </Tab>
+
+        </TabPane>
+    </center>
+
+    <right>
+        <VBox styleClass="ai-panel" minWidth="290" prefWidth="340" spacing="10">
+            <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="AI Mentor Chat" styleClass="chat-title"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Button text="Clear" onAction="#handleClearChat" styleClass="secondary-button"/>
+            </HBox>
+            <Label fx:id="chatContextLabel" styleClass="hint-label" wrapText="true"/>
+            <ScrollPane fx:id="chatScroll" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS" styleClass="chat-scroll">
+                <VBox fx:id="chatBox" spacing="10" styleClass="chat-box">
+                    <padding><Insets top="10" right="8" bottom="10" left="8"/></padding>
+                </VBox>
+            </ScrollPane>
+            <HBox spacing="6">
+                <Button text="Explain it" onAction="#handleQuickExplain" styleClass="chip-button" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button text="Example" onAction="#handleQuickExample" styleClass="chip-button" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+                <Button text="Why this speed?" onAction="#handleQuickWhy" styleClass="chip-button" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+            </HBox>
+            <HBox spacing="8" alignment="CENTER">
+                <TextField fx:id="chatInputField" promptText="Ask the AI mentor anything..." onAction="#handleSendChat" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="chatSendButton" text="Send" onAction="#handleSendChat" styleClass="primary-button"/>
+            </HBox>
+        </VBox>
+    </right>
+
+    <bottom>
+        <VBox fx:id="playbackBar" styleClass="playback-bar" spacing="6">
+            <padding><Insets top="10" right="16" bottom="14" left="16"/></padding>
+            <Label fx:id="stepDescriptionLabel" styleClass="step-desc-label" wrapText="true"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Button fx:id="stepBackButton" text="&#x23EE;" onAction="#handleStepBack"/>
+                <Button fx:id="playPauseButton" text="&#x25B6;" onAction="#handlePlayPause"/>
+                <Button fx:id="stepForwardButton" text="&#x23ED;" onAction="#handleStepForward"/>
+                <Slider fx:id="progressSlider" HBox.hgrow="ALWAYS" min="0" max="1"/>
+                <Label text="Speed"/>
+                <Slider fx:id="speedSlider" min="0.25" max="3" value="1" prefWidth="120"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

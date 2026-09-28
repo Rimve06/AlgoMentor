@@ -717,8 +717,8 @@ Building AlgoMentor demonstrates practical skill in:
 # 👨‍💻 Author
 
 **Tasmin Rubaiat Rimve**
-Department of Computer Science & Engineering (CSE)
-Khulna University of Engineering & Technology (KUET)
+**Department of Computer Science & Engineering (CSE)**
+**Khulna University of Engineering & Technology (KUET)**
 
 ---
 

@@ -486,7 +486,7 @@ The model supplies *explanation*; the application supplies *facts*. This removes
 
 # ✅ Measured Verification
 
-The `model` and `algorithm` packages have no JavaFX dependency, so they were compiled and executed directly on **OpenJDK 21** with a small harness. The numbers below are **measured from the project's own classes**, not estimated.
+The `model` and `algorithm` packages have no JavaFX dependency, so they were compiled and executed directly on **OpenJDK 27** with a small harness. The numbers below are **measured from the project's own classes**, not estimated.
 
 ### Correctness — final snapshot equals `Arrays.sort` on 300 random arrays (sizes 4–30)
 
@@ -549,7 +549,6 @@ These reproduce the textbook behaviour the app teaches: bubble/insertion are ada
 | Java lines of code | ≈ 4,150 |
 | Algorithms implemented | 10 |
 | FXML views | 3 (324 lines) |
-| CSS | 1 file (351 lines) |
 | Database tables | 3 |
 | Curated practice problems | 13 (4 topics) |
 | Built-in teaching guides / code snippets | 10 / 10 |

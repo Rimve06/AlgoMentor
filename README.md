@@ -706,34 +706,51 @@ Building AlgoMentor demonstrates practical skill in:
 
 # 🤝 Contributing
 
-1. Fork the repository and create a feature branch.
-2. Keep the layering: algorithms emit `Step`s only; drawing stays in `CanvasRenderer`; SQL stays in `DatabaseManager`.
-3. To add an algorithm: create a class extending `ArrayAlgorithm` or `GraphAlgorithm`, register it in `AlgorithmFactory`, and add entries to `AlgorithmCodeSnippets` and `AlgorithmGuide` (guide + facts).
-4. Never commit secrets.
+Contributions are welcome.
+
+1. Fork the repository.
+2. Create a new feature branch.
+3. Make your changes to the `.circ` files (Logisim Evolution required).
+4. Update or re-verify the relevant ROM tables if microcode changes.
 5. Open a Pull Request describing the change.
 
 ---
 
 # 👨‍💻 Author
 
+# 👨‍💻 Author
+
 **Tasmin Rubaiat Rimve**
+
 **Department of Computer Science & Engineering (CSE)**
+
 **Khulna University of Engineering & Technology (KUET)**
 
 ---
 
 # 📄 License
 
-Developed for **educational and academic purposes**. You are welcome to study, modify and improve the project with proper attribution.
+This project is developed for **educational and academic purposes**.
+
+You are welcome to study, modify, and improve the project with proper attribution.
 
 ---
 
 # ⭐ Support the Project
 
-⭐ Star the repository · 🍴 Fork it · 📢 Share it with fellow learners
+If you found this project useful or informative:
+
+⭐ Star this repository
+
+🍴 Fork the repository
+
+📢 Share it with others
 
 ---
 
-# 🙏 Acknowledgements
 
-Built as an academic exploration of algorithm education, desktop UI engineering and responsible use of LLMs — where the model explains, and verified data decides the facts.
+### 🙏 Acknowledgements
+
+This project was developed as part of the **Advanced Programming Laboratory**, with the aim of applying the programming concepts and technologies introduced throughout the course in a complete, practical software application. The project brings together **Java, JavaFX, FXML, JavaFX effects, SQL and database management, JSON processing, APIs, Git, and GitHub**, demonstrating how these individual concepts can be integrated into a structured application.
+
+The development of **AlgoMentor** provided an opportunity to move beyond isolated programming exercises and apply these technologies together in designing an interactive **algorithm visualization and learning platform**, incorporating graphical interfaces, persistent data management, external API communication, structured data processing, version control, and collaborative software development practices.
